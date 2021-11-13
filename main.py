@@ -17,18 +17,18 @@ while True:
 
 # собирает ID у всех людей в списке
 pattern = r"https://vk.com/"
-ids = []
+id_list = []
 for link in names:
     n = re.sub(pattern, "", link)
     if re.search(r"id\d+", n):
-        ids.append(re.sub("id", "", n))
+        id_list.append(re.sub("id", "", n))
     else:
         user_name = session.method("users.get", {"user_ids": n, "fields": "id"})
-        ids.append(user_name[0]["id"])
+        id_list.append(user_name[0]["id"])
 
 friends_list = []
 # берет список друзей у каждого человека и заносит его в общий список
-for id in ids:
+for id in id_list:
     friend = session.method("friends.get", {"user_id": id})
     friends_list.append(friend["items"])
 
