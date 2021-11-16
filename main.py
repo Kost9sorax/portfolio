@@ -17,39 +17,37 @@ while True:
 
 # собирает ID у всех людей в списке
 pattern = r"https://vk.com/"
-id_list = []
+userids = []
 for link in names:
     n = re.sub(pattern, "", link)
     if re.search(r"id\d+", n):
-        id_list.append(re.sub("id", "", n))
+        userids.append(re.sub("id", "", n))
     else:
         user_name = session.method("users.get", {"user_ids": n, "fields": "id"})
-        id_list.append(user_name[0]["id"])
+        userids.append(user_name[0]["id"])
 
 friends_list = []
 # берет список друзей у каждого человека и заносит его в общий список
-for id in id_list:
+for id in userids:
     friend = session.method("friends.get", {"user_id": id})
     friends_list.append(friend["items"])
 
 
 def get_user_friends(list):
-    for friends in list[0]:     # перебор друзей первого человека
-        flag = False
-        for people in range(len(list)):
-            if friends not in list[people]:
-                flag = True
-        if not flag:
-            # берет у каждого человека ID его аватарки
-            user_name = session.method("users.get", {"user_ids": friends, "fields": "photo_id"})
-            key = "photo_id"
-            # проверяет есть у человека стоит фотография на аватарке
-            photo = None
-            if key in user_name[0]:
-                photo = ("https://vk.com/id" + str(user_name[0]["id"]) + "?z=photo" + str(photo) + "%2Falbum141937306_0%2Frev")
+    for friend in list[0]:     # перебор друзей первого человека
+        for people in list:
+            if friend not in people:
+                return None
+        # берет у каждого человека ID его аватарки
+        user_name = session.method("users.get", {"user_ids": friend, "fields": "photo_id"})
+        key = "photo_id"
+        # проверяет есть у человека стоит фотография на аватарке
+        photo = None
+        if key in user_name[0]:
+            photo = ("https://vk.com/id" + str(user_name[0]["id"]) + "?z=photo" + str(photo) + "%2Falbum141937306_0%2Frev")
 
-            print("https://vk.com/id" + str(user_name[0]["id"]), user_name[0]["last_name"], user_name[0]["first_name"],
-                  photo)
+        print("https://vk.com/id" + str(user_name[0]["id"]), user_name[0]["last_name"], user_name[0]["first_name"],
+                photo)
 
 
 get_user_friends(friends_list)
