@@ -17,28 +17,28 @@ while True:
 
 # собирает ID у всех людей в списке
 pattern = r"https://vk.com/"
-id_list = []
+userids = []
 for link in names:
     n = re.sub(pattern, "", link)
     if re.search(r"id\d+", n):
-        id_list.append(re.sub("id", "", n))
+        userids.append(re.sub("id", "", n))
     else:
         user_name = session.method("users.get", {"user_ids": n, "fields": "id"})
-        id_list.append(user_name[0]["id"])
+        userids.append(user_name[0]["id"])
 
-friends_list = []
+friends = []
 # берет список друзей у каждого человека и заносит его в общий список
-for id in id_list:
+for id in userids:
     friend = session.method("friends.get", {"user_id": id})
-    friends_list.append(friend["items"])
+    friends.append(friend["items"])
 
 
-def get_user_friends(list):
-    for friends in list[0]:     # перебор друзей первого человека
+def get_user_friends(friends_with_friends):
+    for friend in friends_with_friends[0]:     # перебор друзей первого человека
         flag = False
-        for people in range(len(list)):
-            if friends not in list[people]:
-                flag = True
+        for people in friends_with_friends:    # проверка на то есть ли друг первого человека у всех остальных
+            if friend not in people:
+                flag = True     # если хотя бы у одного его в друзьях нет то алгоритм дальше не идет
         if not flag:
             # берет у каждого человека ID его аватарки
             user_name = session.method("users.get", {"user_ids": friends, "fields": "photo_id"})
@@ -52,5 +52,5 @@ def get_user_friends(list):
                   photo)
 
 
-get_user_friends(friends_list)
+get_user_friends(friends)
 print("--- %s seconds ---" % (time.time() - start_time))
