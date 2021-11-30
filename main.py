@@ -2,7 +2,7 @@ import vk_api
 import re
 import time
 
-session = vk_api.VkApi(token="37f1bb91fe2ea79a7d1c47962f38b8d1e8fc895c2d73f2e233c4d71b3e80045b5f1d7d6e27e8f975a7902")
+session = vk_api.VkApi(token="")
 vk = session.get_api()
 
 start_time = time.time()
